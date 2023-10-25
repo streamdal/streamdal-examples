@@ -20,8 +20,8 @@ This repository demonstrates how to integrate Streamdal SDK into a Node.js appli
 1. **Clone the repository** to your local machine.
 
 ```bash
-git clone https://github.com/your-repository-url.git
-cd your-repository-directory
+git clone https://github.com/streamdal/streamdal-examples
+cd streamdal-examples/rabbit/node
 ```
 
 2. **Install the necessary Node.js dependencies**.
