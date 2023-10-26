@@ -1,0 +1,108 @@
+version: "3.8"
+
+services:
+  streamdal-aes-gen:
+    image: busybox
+    volumes:
+      - ${PWD}/assets/env:/assets/env
+    command: sh -c "/assets/env/script.sh"
+    restart: "no"
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data 
+    ports:
+      - "6379:6379"
+    networks:
+      - streamdal-network
+
+  streamdal-server:
+    container_name: streamdal-server
+    image: streamdal/server:e074107
+    depends_on:
+      - streamdal-aes-gen
+      - redis
+    environment:
+      - STREAMDAL_SERVER_NODE_NAME=node1
+      - STREAMDAL_SERVER_AUTH_TOKEN=1234
+      - STREAMDAL_SERVER_REDIS_URL=redis:6379
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    networks:
+      - streamdal-network
+    restart: on-failure
+
+  envoy:
+    build:
+      context: ../../assets/envoy
+      dockerfile: ../../assets/envoy/Dockerfile
+    container_name: envoy
+    depends_on:
+      - streamdal-server
+    ports:
+      - "9091:9091"
+    networks:
+      - streamdal-network
+    restart: on-failure
+
+  web:
+    image: streamdal/console:v0.1.28
+    container_name: streamdal-console-container
+    depends_on:
+      - envoy
+    environment:
+      - STREAMDAL_GRPC_WEB_URL=http://envoy:9091
+      - STREAMDAL_GRPC_AUTH_TOKEN=1234
+      - STREAMDAL_API_URL=http://envoy:9091
+    ports:
+      - "3000:3000"
+    networks:
+      - streamdal-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+    networks:
+      - streamdal-network
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_ADVERTISED_LISTENERS=INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      - KAFKA_LISTENERS=INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_INTER_BROKER_LISTENER_NAME=INTERNAL
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    networks:
+      - streamdal-network
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    container_name: kafdrop
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_BROKERCONNECT=kafka:29092
+    ports:
+      - "9000:9000"
+    networks:
+      - streamdal-network
+
+volumes:
+  redis-data:
+
+networks:
+  streamdal-network:
