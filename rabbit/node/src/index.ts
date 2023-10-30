@@ -1,5 +1,5 @@
 import amqplib from 'amqplib';
-import { Audience, OperationType, Streamdal, StreamdalConfigs } from "@streamdal/node-sdk/streamdal";
+import { OperationType, Streamdal, StreamdalConfigs, StreamdalResponse } from "@streamdal/node-sdk/streamdal";
 
 // Configuration for Streamdal SDK
 const config: StreamdalConfigs = {
@@ -29,37 +29,33 @@ const sendMessage = async (
 };
 
 // Function to process messages produced by the producer
-const processProducedMessage = async (streamdal: Streamdal, content: Buffer) => {
-  if (content) {
-    // Encoding the content and processing it through Streamdal pipeline
-    const data = new TextEncoder().encode(content.toString());
-    await streamdal.processPipeline({
-      audience: {
-        serviceName: "test-service",
-        componentName: "rabbitmq",
-        operationType: OperationType.PRODUCER,
-        operationName: "rabbitmq-producer",
-      },
-      data
-    });
-  }
+const processProducedMessage = async (content: Buffer) => {
+  // Encoding the content and processing it through Streamdal pipeline
+  const data = new TextEncoder().encode(JSON.stringify(content));
+  return streamdal.processPipeline({
+    audience: {
+      serviceName: "test-service",
+      componentName: "rabbitmq",
+      operationType: OperationType.PRODUCER,
+      operationName: "rabbitmq-producer",
+    },
+    data
+  });
 };
 
 // Function to process messages consumed from the queue
-const processConsumedMessage = async (streamdal: Streamdal, msg: amqplib.ConsumeMessage | null) => {
-  if (msg) {
-    // Encoding the content and processing it through Streamdal pipeline
-    const data = new TextEncoder().encode(msg.content.toString());
-    await streamdal.processPipeline({
-      audience: {
-        serviceName: "test-service",
-        componentName: "rabbitmq",
-        operationType: OperationType.CONSUMER,
-        operationName: "rabbitmq-consumer",
-      },
-      data
-    });
-  }
+const processConsumedMessage = async (msg: amqplib.ConsumeMessage) => {
+  // Encoding the content and processing it through Streamdal pipeline
+  const data = new TextEncoder().encode(JSON.stringify(msg.content));
+  return streamdal.processPipeline({
+    audience: {
+      serviceName: "test-service",
+      componentName: "rabbitmq",
+      operationType: OperationType.CONSUMER,
+      operationName: "rabbitmq-consumer",
+    },
+    data
+  });
 };
 
 const setupConsumer = async () => {
@@ -72,10 +68,20 @@ const setupConsumer = async () => {
 
   // Setting up message consumption and acknowledging the messages after processing
   channel.consume(queue, async (msg) => {
-    await processConsumedMessage(streamdal, msg);
-    if (msg !== null) {
-      channel.ack(msg);
+    if (msg == null) {
+      console.log("No message found")
+      return;
     }
+
+    const processed: StreamdalResponse = await processConsumedMessage(msg);
+
+    if (processed.error) {
+      //
+      // you could conditionally not not ack message on pipeline errors
+      console.error("Error consuming message", processed.message)
+    }
+
+    console.error("Error consuming message", processed.message)
   }, { noAck: false });
 };
 
@@ -89,15 +95,26 @@ const setupProducer = async () => {
 
   // Sending a message at intervals and processing it
   setInterval(async () => {
-    const messageContent = JSON.stringify({ key: "value" });  // simplified example data
+    const messageContent = JSON.stringify({ key: "value" });
+    const processed = await processProducedMessage(Buffer.from(messageContent))
+
+    if (processed.error) {
+      //
+      // you could conditionally not send the message on pipeline errors
+      console.error("Error producing message", processed.message)
+    }
+
     await sendMessage(channel, EXCHANGE_NAME, ROUTING_KEY, messageContent);
-    await processProducedMessage(streamdal, Buffer.from(messageContent));
   }, 1000);
 };
 
 const setup = async () => {
-  await setupProducer();
-  await setupConsumer();
+  try {
+    await setupProducer();
+    await setupConsumer();
+  } catch (e) {
+    console.error(e)
+  }
 };
 
-setup().catch(console.error);
+setup();
