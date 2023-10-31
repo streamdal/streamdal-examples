@@ -3,7 +3,7 @@ import { Audience, OperationType, Streamdal, StreamdalConfigs } from "@streamdal
 
 // Configuration for Streamdal SDK
 const config: StreamdalConfigs = {
-  streamdalUrl: "localhost:9090",
+  streamdalUrl: "localhost:8082",
   streamdalToken: "1234",
   serviceName: "test-service-name",
   pipelineTimeout: "100",
