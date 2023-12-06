@@ -1,5 +1,5 @@
 import { Kafka, Producer, EachMessagePayload } from 'kafkajs';
-import { Audience, OperationType, Streamdal, StreamdalConfigs } from "@streamdal/node-sdk/streamdal";
+import { Audience, OperationType, Streamdal, StreamdalConfigs } from "@streamdal/node-sdk";
 
 // Configuration for Streamdal SDK
 const config: StreamdalConfigs = {

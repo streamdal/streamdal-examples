@@ -1,5 +1,5 @@
 import amqplib from 'amqplib';
-import { OperationType, Streamdal, StreamdalConfigs, StreamdalResponse } from "@streamdal/node-sdk/streamdal";
+import { OperationType, Streamdal, StreamdalConfigs, StreamdalResponse } from "@streamdal/node-sdk";
 
 // Configuration for Streamdal SDK
 const config: StreamdalConfigs = {
