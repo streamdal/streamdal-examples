@@ -1,5 +1,5 @@
-import { Kafka, Producer, EachMessagePayload } from 'kafkajs';
-import { Audience, OperationType, Streamdal, StreamdalConfigs } from "@streamdal/node-sdk/streamdal";
+import { EachMessagePayload, Kafka, Producer } from 'kafkajs';
+import { OperationType, SDKResponse, Streamdal, StreamdalConfigs } from "@streamdal/node-sdk";
 
 // Configuration for Streamdal SDK
 const config: StreamdalConfigs = {
@@ -28,7 +28,7 @@ const sendMessage = async (producer: Producer, topic: string, message: string) =
 const processProducedMessage = async (content: Buffer) => {
   // Encoding the content and processing it through Streamdal pipeline
   const data = new TextEncoder().encode(content.toString());
-  return streamdal.processPipeline({
+  return streamdal.process({
     audience: {
       serviceName: "test-service",
       componentName: "kafka",
@@ -40,10 +40,10 @@ const processProducedMessage = async (content: Buffer) => {
 };
 
 // Function to process messages consumed from the topic
-const processConsumedMessage = async (message: string) => {
+const processConsumedMessage = async (message: string): Promise<SDKResponse> => {
   // Encoding the content and processing it through Streamdal pipeline
   const data = new TextEncoder().encode(message);
-  return streamdal.processPipeline({
+  return streamdal.process({
     audience: {
       serviceName: "test-service",
       componentName: "kafka",
@@ -74,7 +74,7 @@ const setupConsumer = async () => {
       if (processed.error) {
         //
         // conditional error processing
-        console.error("Error consuming message", processed.message)
+        console.error("Error consuming message", processed.errorMessage)
       }
     },
   });
@@ -93,7 +93,7 @@ const setupProducer = async () => {
     if (processed.error) {
       //
       // you could conditionally not send the message on pipeline errors
-      console.error("Error producing message", processed.message)
+      console.error("Error producing message", processed.errorMessage)
     }
 
     await sendMessage(producer, TOPIC_NAME, messageContent);

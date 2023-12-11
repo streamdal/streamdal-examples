@@ -1,5 +1,5 @@
 import amqplib from 'amqplib';
-import { OperationType, Streamdal, StreamdalConfigs, StreamdalResponse } from "@streamdal/node-sdk/streamdal";
+import { OperationType, Streamdal, StreamdalConfigs, SDKResponse } from "@streamdal/node-sdk";
 
 // Configuration for Streamdal SDK
 const config: StreamdalConfigs = {
@@ -29,10 +29,10 @@ const sendMessage = async (
 };
 
 // Function to process messages produced by the producer
-const processProducedMessage = async (content: Buffer) => {
+const processProducedMessage = async (content: Buffer): Promise<SDKResponse> => {
   // Encoding the content and processing it through Streamdal pipeline
   const data = new TextEncoder().encode(JSON.stringify(content));
-  return streamdal.processPipeline({
+  return streamdal.process({
     audience: {
       serviceName: "test-service",
       componentName: "rabbitmq",
@@ -44,10 +44,10 @@ const processProducedMessage = async (content: Buffer) => {
 };
 
 // Function to process messages consumed from the queue
-const processConsumedMessage = async (msg: amqplib.ConsumeMessage) => {
+const processConsumedMessage = async (msg: amqplib.ConsumeMessage): Promise<SDKResponse> => {
   // Encoding the content and processing it through Streamdal pipeline
   const data = new TextEncoder().encode(JSON.stringify(msg.content));
-  return streamdal.processPipeline({
+  return streamdal.process({
     audience: {
       serviceName: "test-service",
       componentName: "rabbitmq",
@@ -73,15 +73,15 @@ const setupConsumer = async () => {
       return;
     }
 
-    const processed: StreamdalResponse = await processConsumedMessage(msg);
+    const processed: SDKResponse = await processConsumedMessage(msg);
 
     if (processed.error) {
       //
       // you could conditionally not not ack message on pipeline errors
-      console.error("Error consuming message", processed.message)
+      console.error("Error consuming message", processed.errorMessage)
     }
 
-    console.error("Error consuming message", processed.message)
+    console.error("Error consuming message", processed.errorMessage)
   }, { noAck: false });
 };
 
@@ -101,7 +101,7 @@ const setupProducer = async () => {
     if (processed.error) {
       //
       // you could conditionally not send the message on pipeline errors
-      console.error("Error producing message", processed.message)
+      console.error("Error producing message", processed.errorMessage)
     }
 
     await sendMessage(channel, EXCHANGE_NAME, ROUTING_KEY, messageContent);

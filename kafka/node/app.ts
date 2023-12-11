@@ -4,7 +4,7 @@ import {
   OperationType,
   Streamdal,
   StreamdalConfigs,
-  StreamdalResponse
+  SDKResponse
 } from '@streamdal/node-sdk';
 
 const streamdalConfig: StreamdalConfigs = {
@@ -29,7 +29,7 @@ const processMessage = async (msg: amqplib.ConsumeMessage | null) => {
   };
   if (msg) {
     const data = new TextEncoder().encode(msg.content.toString());
-    const result: StreamdalResponse = await streamdal.processPipeline({ audience, data });
+    const result: SDKResponse = await streamdal.process({ audience, data });
     if (result.error) {
       console.error("Pipeline error", result.message);
       console.dir(result.stepStatuses);  // Optional
@@ -43,10 +43,10 @@ const processMessage = async (msg: amqplib.ConsumeMessage | null) => {
 const setup = async () => {
   const connection = await amqplib.connect(rabbitmqUrl);
   const channel = await connection.createChannel();
-  
+
   const queue = 'exampleQueue';
   await channel.assertQueue(queue, { durable: false });
-  
+
   // Send a message
   setInterval(async () => {
     await sendMessage(channel, queue, 'Hello, world!');
