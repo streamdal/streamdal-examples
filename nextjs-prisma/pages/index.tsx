@@ -29,7 +29,7 @@ const Index: React.FC<Props> = (props) => {
 
   return (
     <Layout>
-      <div>
+      <div className="mb-4">
         <main>
           {props.users?.length ?
             <>
@@ -49,9 +49,7 @@ const Index: React.FC<Props> = (props) => {
           }
         </main>
       </div>
-      <div className="mt-2 p-2 border rounded w-28">
-        <a href="/create"> Add a user</a>
-      </div>
+      <a className="p-2 border rounded w-28" href="/create"> Add a user</a>
     </Layout>
   );
 };

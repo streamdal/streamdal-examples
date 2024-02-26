@@ -7,6 +7,7 @@ const config: StreamdalConfigs = {
   pipelineTimeout: "100",
   stepTimeout: "10",
   dryRun: false,
+  quiet: true
 };
 
 export const streamdal = new Streamdal(config);
