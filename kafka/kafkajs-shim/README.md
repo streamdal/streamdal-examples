@@ -6,7 +6,7 @@ This is an example application that uses Streamdal's Kafkajs Shim.
 
 ### Getting Started:
 
-Start Kafka in `/kafka/node`:
+Start Kafka in (from the top level of this project) `/kafka/node`:
 
 ```
 docker compose up
