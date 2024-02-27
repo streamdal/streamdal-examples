@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { Kafka } from "kafkajs";
+import { Kafka } from "@streamdal/kafkajs";
 
 const streamdalConfigs = {
   streamdalUrl: "localhost:8082",
@@ -10,6 +10,7 @@ const streamdalConfigs = {
   dryRun: false,
   quiet: true,
   disableAutomaticPipelines: false,
+  abortOnError: false
 };
 
 const onboardProducer = {
@@ -36,7 +37,7 @@ const externalConsumerAudience = {
 const kafka = new Kafka({
   clientId: "user-management",
   brokers: ["localhost:9092", "localhost:9092"],
-  streamdalConfigs,
+  streamdalConfigs
 });
 
 const producer = kafka.producer();
