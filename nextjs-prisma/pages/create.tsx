@@ -44,7 +44,7 @@ const Create: React.FC = () => {
               value={email}
             />
           </div>
-          <input className={`mt-2 p-2 border rounded p-2 ${name && email ? "cursor-pointer" : "cursor-not-allowed"} `}
+          <input className={`mt-2 p-2 border rounded ${name && email ? "cursor-pointer" : "cursor-not-allowed"} `}
                  disabled={!name || !email} type="submit" value="Create"/>
         </form>
       </div>

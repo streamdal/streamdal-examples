@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../../lib/prisma'
-import { Audience, OperationType, SDKResponse, Streamdal, StreamdalConfigs } from "@streamdal/node-sdk";
+import { Audience, OperationType, SDKResponse } from "@streamdal/node-sdk";
 import { streamdal } from "../../../lib/streamdal";
 
 
@@ -21,8 +21,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     audience,
     data: new TextEncoder().encode(JSON.stringify(user)),
   });
-  console.log("shit streamdalResult", streamdalResult)
-
+  
   const result = await prisma.user.create({
     data: JSON.parse(new TextDecoder().decode(streamdalResult.data)),
   });

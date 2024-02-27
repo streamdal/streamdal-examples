@@ -1,5 +1,5 @@
 import { EachMessagePayload, Kafka, Producer } from 'kafkajs';
-import { OperationType, SDKResponse, Streamdal, StreamdalConfigs } from "@streamdal/node-sdk";
+import { ExecStatus, OperationType, SDKResponse, Streamdal, StreamdalConfigs } from "@streamdal/node-sdk";
 
 // Configuration for Streamdal SDK
 const config: StreamdalConfigs = {
@@ -68,13 +68,13 @@ const setupConsumer = async () => {
         console.log("No message found")
         return;
       }
-      const processed =
+      const processed:SDKResponse =
         await processConsumedMessage(JSON.stringify(payload.message.value));
 
-      if (processed.error) {
+      if (processed.status === ExecStatus.ERROR) {
         //
         // conditional error processing
-        console.error("Error consuming message", processed.errorMessage)
+        console.error("Error consuming message", processed.statusMessage)
       }
     },
   });
@@ -90,10 +90,10 @@ const setupProducer = async () => {
     const messageContent = JSON.stringify({ key: "value" });
     const processed = await processProducedMessage(Buffer.from(messageContent))
 
-    if (processed.error) {
+    if (processed.status === ExecStatus.ERROR) {
       //
-      // you could conditionally not send the message on pipeline errors
-      console.error("Error producing message", processed.errorMessage)
+      // conditional error processing
+      console.error("Error consuming message", processed.statusMessage)
     }
 
     await sendMessage(producer, TOPIC_NAME, messageContent);

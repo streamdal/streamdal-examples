@@ -6,7 +6,7 @@
   "license": "MIT",
   "author": "",
   "scripts": {
-    "dev": "next",
+    "dev": "next dev -p 3001",
     "build": "npx prisma migrate deploy && next build",
     "start": "next start",
     "db:up": "docker-compose up -d",
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@prisma/client": "4.10.1",
-    "@streamdal/node-sdk": "^0.2.10",
+    "@streamdal/node-sdk": "^0.2.15",
     "next": "12.1.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",

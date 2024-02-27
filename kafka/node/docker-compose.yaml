@@ -21,7 +21,7 @@ services:
 
   streamdal-server:
     container_name: streamdal-server
-    image: streamdal/server:ef7093c
+    image: streamdal/server:latest
     depends_on:
       - streamdal-aes-gen
       - redis
@@ -50,7 +50,7 @@ services:
     restart: on-failure
 
   web:
-    image: streamdal/console:v0.1.31
+    image: streamdal/console:latest
     container_name: streamdal-console-container
     depends_on:
       - envoy
