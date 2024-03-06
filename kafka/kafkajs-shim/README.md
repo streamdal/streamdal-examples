@@ -2,7 +2,7 @@
 
 This is an example application that uses Streamdal's Kafkajs Shim.
 
-##### Prerequisites
+##### Getting started
 
 You must have Kafka and the Streamdal Platform running. To run them all locally using docker simply:
 
@@ -10,12 +10,31 @@ You must have Kafka and the Streamdal Platform running. To run them all locally 
 docker compose up
 ```
 
-###
-In `/kafka/kafkajs-shim`:
+
+Install dependencies. In `/kafka/kafkajs-shim`:
 
 ```
 npm install
 ```
+
+Add configuration. You can set configurations via env variables or code.
+
+If your app supports `.env` files:
+
+```
+cp example.env .env
+```
+
+Or export them:
+
+```
+export STREAMDAL_URL="localhost:8082"
+export STREAMDAL_TOKEN="1234"
+export STREAMDAL_SERVICE_NAME="user-onboard-service"
+```
+
+Or via code: see and uncomment configuration code in `src/index.ts`
+
 
 ##### Run the app
 ``` 
