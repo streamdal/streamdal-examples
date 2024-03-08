@@ -1,7 +1,7 @@
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
-import { streamdalPlugin } from "./streamdalPlugin.js";
 import { faker } from "@faker-js/faker";
+import { streamdalPlugin } from "@streamdal/apollo-server-plugin";
 import * as crypto from "crypto";
 
 const typeDefs = `#graphql
