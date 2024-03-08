@@ -1,0 +1,71 @@
+version: "3"
+
+services:
+  streamdal-server:
+    container_name: streamdal-apollo-server
+    image: streamdal/server:latest
+    depends_on:
+      - streamdal-aes-gen
+      - redis
+    environment:
+      - STREAMDAL_SERVER_NODE_NAME=node1
+      - STREAMDAL_SERVER_AUTH_TOKEN=1234
+      - STREAMDAL_SERVER_REDIS_URL=redis:6379
+    ports:
+      - "8081:8081"
+      - "8082:8082"
+    networks:
+      - streamdal-network
+    restart: on-failure
+
+  streamdal-console:
+    container_name: streamdal-apollo-console
+    image: streamdal/console:latest
+    depends_on:
+      - envoy
+    environment:
+      - STREAMDAL_CONSOLE_GRPC_WEB_URL=http://envoy:8083
+      - STREAMDAL_CONSOLE_GRPC_AUTH_TOKEN=1234
+      - STREAMDAL_CONSOLE_PORT=8080
+      - STREAMDAL_CONSOLE_PRODUCTION=true
+    ports:
+      - "8080:8080"
+    networks:
+      - streamdal-network
+
+  # Used to generate AES key for server used for encrypting secrets
+  streamdal-aes-gen:
+    image: busybox
+    volumes:
+      - ${PWD}/assets/env:/assets/env
+    command: sh -c "/assets/env/script.sh"
+    restart: "no"
+
+  # Used by server for storage
+  redis:
+    container_name: streamdal-apollo-redis
+    image: redis:latest
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - streamdal-network
+
+  # Used by console to talk to server via grpc-Web
+  envoy:
+    container_name: streamdal-apollo-envoy
+    image: envoyproxy/envoy:tools-v1.28.0
+    ports:
+      - "8083:8083"
+    volumes:
+      - ${PWD}/assets/envoy/envoy.yaml:/etc/envoy/envoy.yaml
+    networks:
+      - streamdal-network
+
+volumes:
+  redis-data:
+
+networks:
+  streamdal-network:
