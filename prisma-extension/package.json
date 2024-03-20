@@ -1,0 +1,29 @@
+{
+  "name": "prisma-extension-streamdal-example",
+  "description": "An example application the uses Streamdal's Prisma Extension to add code-native data pipelines to Prisma db operations",
+  "author": "Jacob Heric",
+  "license": "Apache-2.0",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "ts-node --transpile-only index.ts",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.7.0",
+    "@streamdal/prisma-extension-streamdal": "latest",
+    "@faker-js/faker": "^8.4.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.0.2",
+    "@typescript-eslint/parser": "^7.0.2",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5",
+    "prisma": "^5.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
