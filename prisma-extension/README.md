@@ -15,7 +15,7 @@ This is an example application that uses Streamdal's Prisma Extension to add
 code native data pipelines to observe, transform, and secure data before it 
 enters or exists the database. 
 
-Read more about Streamdal here: [Streamdal](https://www.streadmdal.com).
+Read more about Streamdal here: [Streamdal](https://www.streamdal.com).
 Read more about Prisma client extensions here: [Prisma docs](https://www.prisma.io/docs/concepts/components/prisma-client/client-extensions).
 
 ### Prerequisites
