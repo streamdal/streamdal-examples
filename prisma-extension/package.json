@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.7.0",
-    "@streamdal/prisma-extension-streamdal": "latest",
+    "@streamdal/prisma-extension-streamdal": "0.0.10",
     "@faker-js/faker": "^8.4.1"
   },
   "devDependencies": {
